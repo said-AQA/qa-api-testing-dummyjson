@@ -1,5 +1,7 @@
 # QA API Automation – DummyJSON (Postman & Newman)
 
+ ![API Tests](https://github.com/said-AQA/qa-api-testing-dummyjson/actions/workflows/api-tests.yml/badge.svg)
+ 
 ##  Overview
 This repository contains an **API automation testing project** built using **Postman** and **Newman**, designed to validate authentication and product endpoints on the **DummyJSON public API**.
 
