@@ -1,0 +1,340 @@
+{
+	"info": {
+		"_postman_id": "1f1f7a08-7c80-4d6b-b298-c726752f2ad1",
+		"name": "DummyJSON API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28369757"
+	},
+	"item": [
+		{
+			"name": "AUTH - Login success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"accessToken is present\", () => {\r",
+							"  pm.expect(json.accessToken).to.be.a(\"string\").and.not.empty;\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"token\", json.accessToken);\r",
+							"pm.test(\"Content-Type is JSON\", () => {\r",
+							"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is under 1000ms\", () => {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							"const Ajv = require('ajv');\r",
+							"const ajv = new Ajv({ allErrors: true });\r",
+							"\r",
+							"const schema = {\r",
+							"  type: \"object\",\r",
+							"  required: [\"id\", \"username\", \"email\", \"accessToken\", \"refreshToken\"],\r",
+							"  properties: {\r",
+							"    id: { type: \"number\" },\r",
+							"    username: { type: \"string\" },\r",
+							"    email: { type: \"string\" },\r",
+							"    accessToken: { type: \"string\" },\r",
+							"    refreshToken: { type: \"string\" }\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Login response matches schema\", () => {\r",
+							"  const json = pm.response.json();\r",
+							"  const valid = ajv.validate(schema, json);\r",
+							"  pm.expect(valid, JSON.stringify(ajv.errors)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Performance: response time < 1500ms\", () => {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"emilys\",\r\n  \"password\": \"emilyspass\",\r\n  \"expiresInMins\": 30\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://dummyjson.com/auth/login",
+					"protocol": "https",
+					"host": [
+						"dummyjson",
+						"com"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AUTH - Login invalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", () => {\r",
+							"  pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Error message is returned\", () => {\r",
+							"  pm.expect(json.message).to.be.a(\"string\").and.not.empty;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"emilys\",\r\n  \"password\": \"wrongPassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://dummyjson.com/auth/login",
+					"protocol": "https",
+					"host": [
+						"dummyjson",
+						"com"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PRODUCTS - Get product by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const p = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Product has main fields\", () => {\r",
+							"  pm.expect(p).to.have.property(\"id\");\r",
+							"  pm.expect(p).to.have.property(\"title\");\r",
+							"  pm.expect(p).to.have.property(\"price\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content-Type is JSON\", () => {\r",
+							"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is under 1000ms\", () => {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							"const Ajv = require('ajv');\r",
+							"const ajv = new Ajv({ allErrors: true });\r",
+							"\r",
+							"const schema = {\r",
+							"  type: \"object\",\r",
+							"  required: [\"id\", \"title\", \"price\", \"category\"],\r",
+							"  properties: {\r",
+							"    id: { type: \"number\" },\r",
+							"    title: { type: \"string\" },\r",
+							"    price: { type: \"number\" },\r",
+							"    category: { type: \"string\" },\r",
+							"    description: { type: \"string\" }\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Product response matches schema\", () => {\r",
+							"  const json = pm.response.json();\r",
+							"  const valid = ajv.validate(schema, json);\r",
+							"  pm.expect(valid, JSON.stringify(ajv.errors)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"preformance: response time < 800ms\",()=> {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://dummyjson.com/products/1",
+					"protocol": "https",
+					"host": [
+						"dummyjson",
+						"com"
+					],
+					"path": [
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PRODUCTS - Search products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Products array returned\", () => {\r",
+							"  pm.expect(json.products).to.be.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"At least one result\", () => {\r",
+							"  pm.expect(json.products.length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"performance: response time < 1000ms\", () => {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://dummyjson.com/products/search?q=phone",
+					"protocol": "https",
+					"host": [
+						"dummyjson",
+						"com"
+					],
+					"path": [
+						"products",
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "phone"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PRODUCTS - Pagination (limit & skip)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Returns max 5 products\", () => {\r",
+							"  pm.expect(json.products).to.be.an(\"array\");\r",
+							"  pm.expect(json.products.length).to.be.at.most(5);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Has pagination fields\", () => {\r",
+							"  pm.expect(json).to.have.property(\"total\");\r",
+							"  pm.expect(json).to.have.property(\"skip\");\r",
+							"  pm.expect(json).to.have.property(\"limit\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Performance : response time < 1000ms\", () => {\r",
+							"pm.expect (pm.response.responseTime).to.be .below (1000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://dummyjson.com/products?limit=5&skip=0",
+					"protocol": "https",
+					"host": [
+						"dummyjson",
+						"com"
+					],
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "skip",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

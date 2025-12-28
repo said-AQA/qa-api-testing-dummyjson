@@ -1,0 +1,12 @@
+{
+  "name": "qa-api-testing-postman",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "api:test": "newman run collections/dummyjson_api_tests.postman_collection.json -e environments/dummyjson_env.postman_environment.json"
+  },
+  "devDependencies": {
+    "newman": "^6.2.1"
+  }
+}
